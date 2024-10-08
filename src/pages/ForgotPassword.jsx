@@ -1,5 +1,7 @@
+import SignForm from "../components/SignForm";
+
 function ForgotPassword() {
-  return <div>Forgot Password</div>;
+  return <SignForm />;
 }
 
 export default ForgotPassword;
