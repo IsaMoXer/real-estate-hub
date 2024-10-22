@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { HiEye, HiEyeOff } from "react-icons/hi";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import OAuth from "../components/OAuth";
+import { signUp } from "../services/apiAuth";
+import { toast } from "react-toastify";
 
 function SignForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -14,6 +16,8 @@ function SignForm() {
   const { fullName, email, password } = formData;
 
   const location = useLocation();
+  const navigate = useNavigate();
+
   const isSignUp = location.pathname === "/sign-up";
   const isSignIn = location.pathname === "/sign-in";
   const isForgotPassword = location.pathname === "/forgot-password";
@@ -23,6 +27,30 @@ function SignForm() {
       ...prevState,
       [e.target.id]: e.target.value,
     }));
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault();
+
+    if (isForgotPassword && !email) {
+      return console.log("Missing email!");
+    }
+
+    if (isForgotPassword) {
+      return console.log("Password needs to be sent!");
+    }
+
+    if (!fullName || !email || !password) return console.log("Missing fields!");
+
+    if (isSignUp) {
+      //signUp(fullName, email, password);
+      signUp(formData);
+      console.log("Signed Up!");
+    } else if (isSignIn) {
+      console.log("Signed In!");
+    }
+    // TODO: if error, do NOT navigate to home page
+    navigate("/");
   }
 
   return (
@@ -41,7 +69,7 @@ function SignForm() {
 
         {/* FORM */}
         <div className="w-full md:w-[67%] lg:w-[45%]">
-          <form className="flex flex-col gap-6">
+          <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
             {isSignUp && (
               <input
                 className="w-full px-4 py-2 text-xl text-gray-700 bg-white border-gray-300 rounded transition ease-in-out"
