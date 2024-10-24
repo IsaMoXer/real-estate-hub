@@ -4,15 +4,27 @@ import {
   updateProfile,
   signInWithPopup,
   GoogleAuthProvider,
+  signInWithEmailAndPassword,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 
-import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  serverTimestamp,
+  setDoc,
+  where,
+} from "firebase/firestore";
 
 import { db } from "../firebase";
 import { toast } from "react-toastify";
 
 const auth = getAuth();
 
+// Register or Sign Up with Email and Password
 export async function signUp({ fullName, email, password }) {
   try {
     const userCredentials = await createUserWithEmailAndPassword(
@@ -50,10 +62,10 @@ export async function signInWithGoogle() {
     // Check if the user already exists
     const docRef = doc(db, "users", user.uid);
     const docSnap = await getDoc(docRef);
-    console.log("Doc Snap: ", docSnap);
+
     if (!docSnap.exists()) {
       // Create a users collection inside the db without sensitive information
-      console.log("User info: ", user.email);
+      //console.log("User info: ", user.email);
       const userDBObject = {
         fullName: user.displayName,
         email: user.email,
@@ -70,5 +82,58 @@ export async function signInWithGoogle() {
     console.error(error.message);
     toast.error("Error signing in with Google");
     return { success: false, error };
+  }
+}
+
+// Sign in with Email and Password
+export async function signIn(email, password) {
+  try {
+    const userCredentials = await signInWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+    const user = userCredentials?.user;
+    return { success: true, user };
+  } catch (error) {
+    console.log(error.message);
+    toast.error("Invalid credentials, please try again");
+    return { success: false, error };
+  }
+}
+
+// Forgot password with email to reset it
+export async function resetPassword(email) {
+  try {
+    // Check if the user exists in the database (NOTE: no "validate email/true email" functionality so far, only the format)
+    const isUserRegistered = await checkUserExistsByEmail(email);
+
+    if (!isUserRegistered) {
+      // No user exists with this email
+      toast.error("No account found with this email address");
+      return { success: false };
+    }
+
+    // User exists, so send the password reset email
+    await sendPasswordResetEmail(auth, email);
+    toast.success("Reset password email was sent");
+    return { success: true };
+  } catch (error) {
+    console.error("Error in reset password process:", error);
+    toast.error("Error: reset password email was not sent");
+    return { success: false, error };
+  }
+}
+
+async function checkUserExistsByEmail(email) {
+  const usersRef = collection(db, "users");
+  const q = query(usersRef, where("email", "==", email));
+
+  const querySnapshot = await getDocs(q);
+  if (!querySnapshot.empty) {
+    return true;
+  } else {
+    console.error("User does not exist.");
+    return false;
   }
 }

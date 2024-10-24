@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { HiEye, HiEyeOff } from "react-icons/hi";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+
 import OAuth from "../components/OAuth";
-import { signUp } from "../services/apiAuth";
 import InputWithError from "./InputWithError";
+
+import { resetPassword, signIn, signUp } from "../services/apiAuth";
 import { validateEmailFormat, validatePasswordFormat } from "../utils/helpers";
 
 function SignForm() {
@@ -78,8 +80,16 @@ function SignForm() {
 
     try {
       if (formType.forgotPassword) {
-        // TODO: Implement forgot password functionality including error handling
-        console.log("Password reset email needs to be sent!");
+        const result = await resetPassword(email);
+        // First check if the email is in the database
+        if (!result.success) {
+          setErrors({
+            email: "The email you provided is not registered",
+          });
+          return;
+        }
+        // If user exists, send email and return
+        return;
       } else if (formType.signUp) {
         const result = await signUp(formData);
         if (result.success) {
@@ -87,13 +97,20 @@ function SignForm() {
           navigate("/");
         }
       } else if (formType.signIn) {
-        // TODO: Implement sign in functionality including error handling
-        console.log("Signed In!");
+        const result = await signIn(email, password);
+        if (result.success) {
+          console.log("Logged in correctly!");
+          navigate("/");
+        } else {
+          setErrors({
+            email: "Email or password are not correct",
+            password: "Email or password are not correct",
+          });
+          return console.log("Error signing in!");
+        }
       }
     } catch (error) {
       console.error("Error during form submission:", error);
-      // TODO: Handle error (e.g., show error message to user)
-      // Error is so far handled with a toast error and not redirecting anywhere
     } finally {
       setIsLoading(false);
     }
