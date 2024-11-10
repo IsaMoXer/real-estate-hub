@@ -6,6 +6,7 @@ import {
   GoogleAuthProvider,
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
+  onAuthStateChanged,
 } from "firebase/auth";
 
 import {
@@ -16,6 +17,7 @@ import {
   query,
   serverTimestamp,
   setDoc,
+  updateDoc,
   where,
 } from "firebase/firestore";
 
@@ -125,15 +127,70 @@ export async function resetPassword(email) {
   }
 }
 
+// Helper function to check if a user exists using email before sending reset password email
 async function checkUserExistsByEmail(email) {
-  const usersRef = collection(db, "users");
-  const q = query(usersRef, where("email", "==", email));
+  try {
+    const usersRef = collection(db, "users");
+    const q = query(usersRef, where("email", "==", email));
 
-  const querySnapshot = await getDocs(q);
-  if (!querySnapshot.empty) {
-    return true;
-  } else {
-    console.error("User does not exist.");
-    return false;
+    const querySnapshot = await getDocs(q);
+    if (!querySnapshot.empty) {
+      return true;
+    } else {
+      //console.log("User does not exist.");
+      return false;
+    }
+  } catch (error) {
+    console.error("Error checking user existence:", error);
+    // You might want to throw the error again if you want to handle it in the calling function
+    // throw error;
+    return false; // or you could return null to indicate an error occurred
   }
 }
+
+// Sign out
+export const logOut = async () => {
+  try {
+    await auth.signOut();
+    // Handle successful sign out
+    toast.success("Logged out successfully!");
+    return { success: true };
+  } catch (error) {
+    // Handle any errors
+    console.error("Sign out error:", error);
+    toast.error("Error: user could not be logged out");
+    return { success: false };
+  }
+};
+
+// Detects auth changes, used in the AuthContext
+export const subscribeToAuthChanges = callback => {
+  return onAuthStateChanged(auth, user => {
+    callback(user);
+  });
+};
+
+// Update user profile (both auth obj and users collection)
+export const updateUserProfile = async fullName => {
+  try {
+    // Update auth object in firebase/auth
+    await updateProfile(auth.currentUser, {
+      displayName: fullName,
+    });
+
+    // Update the users collection in firestore
+    const userDocRef = doc(db, "users", auth.currentUser.uid);
+    await updateDoc(userDocRef, {
+      fullName,
+    });
+
+    // Handle successful update only after both operations are complete
+    toast.success("Profile details updated");
+    return { success: true };
+  } catch (error) {
+    // Handle any errors
+    console.error("Profile update error:", error);
+    toast.error("Error: user could not update the profile details");
+    return { success: false, error };
+  }
+};

@@ -93,13 +93,13 @@ function SignForm() {
       } else if (formType.signUp) {
         const result = await signUp(formData);
         if (result.success) {
-          console.log("Signed Up!");
+          //console.log("Signed Up!");
           navigate("/");
         }
       } else if (formType.signIn) {
         const result = await signIn(email, password);
         if (result.success) {
-          console.log("Logged in correctly!");
+          //console.log("Logged in correctly!");
           navigate("/");
         } else {
           setErrors({
@@ -117,7 +117,7 @@ function SignForm() {
   }
 
   return (
-    <section className="">
+    <section>
       <h2 className="text-center font-bold text-2xl pt-4">
         {formType.signUp
           ? "Sign Up"
