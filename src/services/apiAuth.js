@@ -1,5 +1,4 @@
 import {
-  getAuth,
   createUserWithEmailAndPassword,
   updateProfile,
   signInWithPopup,
@@ -21,10 +20,9 @@ import {
   where,
 } from "firebase/firestore";
 
-import { db } from "../firebase";
+import { db, auth } from "../firebase";
 import { toast } from "react-toastify";
 
-const auth = getAuth();
 
 // Register or Sign Up with Email and Password
 export async function signUp({ fullName, email, password }) {

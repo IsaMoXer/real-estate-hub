@@ -120,7 +120,7 @@ function Profile() {
           className="flex justify-center items-center gap-2 w-full bg-blue-600 hover:bg-blue-700 px-7 py-3 my-6 rounded transition duration-150 ease-in-out font-medium shadow-md hover:shadow-lg active:shadow-xl active:translate-y-1 active:bg-blue-800"
         >
           <FcHome className="bg-red-200 rounded-full p-1 text-3xl border-2" />
-          <span className=" text-white uppercase font-medium text-sm">
+          <span className="text-white uppercase font-medium text-sm">
             Sell or rent your home
           </span>
         </Link>

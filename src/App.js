@@ -10,10 +10,10 @@ import SignUp from "./pages/SignUp";
 import Offers from "./pages/Offers";
 import ForgotPassword from "./pages/ForgotPassword";
 import PageNotFound from "./pages/PageNotFound";
+import CreateListing from "./pages/CreateListing";
 import AppLayout from "./components/AppLayout";
 
 import { AuthProvider } from "./contexts/AuthContext";
-import CreateListing from "./pages/CreateListing";
 
 const protectedRoutes = [
   { path: "/profile", component: Profile },

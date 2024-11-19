@@ -6,7 +6,7 @@ export default function InputWithError({
   placeholder,
   value,
   onChange,
-  className,
+  addedClassName,
   error,
   isEditing,
   ...restProperties
@@ -27,14 +27,16 @@ export default function InputWithError({
     <div className="relative">
       <input
         ref={inputRef}
-        className={`w-full px-4 py-2 text-xl text-gray-700 bg-white border-gray-300 rounded transition ease-in-out ${
-          error ? "border-red-500" : ""
-        } ${className || ""} ${inputClass}`}
         type={type}
         id={id}
         placeholder={placeholder}
         value={value}
         onChange={onChange}
+        className={`w-full px-4 py-2 text-xl text-gray-700 bg-white border-gray-300 rounded transition duration-150 ease-in-out ${
+          error ? "border-red-500" : ""
+        } ${inputClass} ${type === "file" ? "border" : ""} ${
+          addedClassName || ""
+        }`}
         {...restProperties}
       />
       {error && (
