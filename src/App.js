@@ -11,13 +11,16 @@ import Offers from "./pages/Offers";
 import ForgotPassword from "./pages/ForgotPassword";
 import PageNotFound from "./pages/PageNotFound";
 import CreateListing from "./pages/CreateListing";
+import EditListing from "./pages/EditListing";
 import AppLayout from "./components/AppLayout";
 
 import { AuthProvider } from "./contexts/AuthContext";
+import Listing from "./pages/Listing";
 
 const protectedRoutes = [
   { path: "/profile", component: Profile },
   { path: "/create-listing", component: CreateListing },
+  { path: "/edit-listing/:listingId", component: EditListing },
 ];
 
 function App() {
@@ -43,6 +46,7 @@ function App() {
               <Route path="/sign-up" element={<SignUp />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/offers" element={<Offers />} />
+              <Route path="/category/:listingCategory/:listingId" element={<Listing />} />
             </Route>
             <Route path="*" element={<PageNotFound />} />
           </Routes>

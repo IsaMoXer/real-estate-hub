@@ -1,16 +1,23 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 import InputWithError from "../components/InputWithError";
+import ListingCard from "../components/ListingCard";
+import Spinner from "../components/Spinner";
 
 import { useAuth } from "../hooks/useAuth";
 import { logOut, updateUserProfile } from "../services/apiAuth";
 import { FcHome } from "react-icons/fc";
+import { useUserListings } from "../hooks/useUserListings";
+import { deleteListingById } from "../services/apiDb";
 
 function Profile() {
   const [isEditing, setIsEditing] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const { user } = useAuth();
+  const {listings, loading, error, updateListings} = useUserListings(user.uid);
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -72,10 +79,38 @@ function Profile() {
     navigate("/");
   }
 
+  function handleEdit(listingId){
+    navigate(`/edit-listing/${listingId}`);
+  }
+  async function handleDelete(listingId) {
+    if (window.confirm("Are you sure you want to delete the listing?")) {
+      try {
+        // Set a loading state if needed
+        setIsDeleting(true);
+  
+        // Delete from Firebase
+        const result = await deleteListingById(listingId);
+  
+        // After successful deletion, update the listings
+        const updatedListings = listings.filter(listing => listing.id !== listingId);
+        updateListings(updatedListings);
+        
+        toast.success(result.message || "Successfully deleted the listing");
+      } catch (error) {
+        console.error("Error in deleting the listing:", error);
+        toast.error(error.message || "Failed to delete the listing. Please try again.");
+      } finally {
+        // Reset loading state if needed
+        setIsDeleting(false);
+      }
+    }
+  }
+
   return (
     <section>
-      <h2 className="text-center font-bold text-2xl pt-4 mb-6">My Profile</h2>
-      <div className="w-full px-6 max-w-[600px] mx-auto">
+      <h2 className="text-center font-bold text-2xl pt-4">My Profile</h2>
+      {/* USER SETTINGS UPDATE CONTAINER */}
+      <div className="w-full px-6 pt-12 max-w-[600px] mx-auto">
         <form className="flex flex-col gap-6">
           <InputWithError
             type="text"
@@ -125,6 +160,20 @@ function Profile() {
           </span>
         </Link>
       </div>
+      {/* LOADING SPINNER WHEN DELETING */}
+      {isDeleting && <Spinner />}
+      {/* MY LISTINGS CONTAINER */}
+      {listings && listings.length > 0 ? (
+      <div className="max-w-6xl mx-auto px-8">
+        <h2 className="text-center font-semibold text-2xl pt-4 mb-6">My Listings</h2>
+        <ul className="sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-8">
+          {listings.map(listing => <ListingCard key={listing.id} listing={listing.data} listingId={listing.id} onEdit={() => handleEdit(listing.id)} onDelete={() => handleDelete(listing.id)} />)}
+        </ul>
+      </div>
+    ) : (
+      /* MESSAGE FOR NO LISTINGS FOUND*/
+      <p className="text-center font-semibold sm:text-xl p-4">No listings found!</p>
+    )}
     </section>
   );
 }

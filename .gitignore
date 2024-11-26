@@ -25,3 +25,6 @@ yarn-error.log*
 
 # Old file versions
 SignForm_v1.jsx
+
+# Firebase rules
+firebase_rules.js

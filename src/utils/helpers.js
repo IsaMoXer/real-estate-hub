@@ -56,6 +56,10 @@ export function validateAddressFormat(address) {
   return { isValid: true, error: null };
 }
 
+// Formats the price display by adding commas as thousand separators
+export const formatPrice = (price) => {
+  return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+};
 
 export const geocodeAddress = async (address) => {
   try {
@@ -84,6 +88,17 @@ export const geocodeAddress = async (address) => {
     return null;
   }
 };
+
+export function hasDataChanged(originalData, updatedData) {
+  const relevantFields = ['listingType', 'listingTitle', 'bedrooms', 'bathrooms', 'parking', 'furnished', 'address', 'description', 'offer', 'regularPrice', 'discountedPrice'];
+  
+  return relevantFields.some(field => {
+    // Convert to string for comparison to handle number vs string issues
+    const originalValue = String(originalData[field] || '');
+    const updatedValue = String(updatedData[field] || '');
+    return originalValue !== updatedValue;
+  });
+}
 
 /* export async function getAddress(address){
   try {
