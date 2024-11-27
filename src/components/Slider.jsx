@@ -1,8 +1,8 @@
+import { useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { EffectFade, Autoplay, Navigation, Pagination } from "swiper/modules";
 import "swiper/css/bundle";
 import { FaShare } from "react-icons/fa";
-import { useState } from "react";
 
 function Slider({listing}) {
   const [shareLinkCopied, setShareLinkCopied] = useState(false);

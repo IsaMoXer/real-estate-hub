@@ -1,13 +1,12 @@
+import Moment from "react-moment";
 import { Link } from "react-router-dom";
 import { MdLocationOn } from "react-icons/md";
-import Moment from "react-moment";
-
-import { formatPrice } from "../utils/helpers";
 import { HiPencil, HiTrash } from "react-icons/hi";
 
+import { formatPrice } from "../utils/helpers";
+
 function ListingCard({listingId, listing, onEdit, onDelete}) {
-  // CONSOLE!
-  //console.log('Listing: ', listing);  
+ 
   const displayPrice = listing.offer ? listing.discountedPrice : listing.regularPrice;
 
   return (
@@ -45,10 +44,10 @@ function ListingCard({listingId, listing, onEdit, onDelete}) {
         </div>
       </Link>
       {/* EDIT AND DELETE CONTAINER */}
-      <div className="absolute bottom-3 right-3 flex justify-end items-center gap-3 text-lg">
+      {(onEdit || onDelete) && (<div className="absolute bottom-3 right-3 flex justify-end items-center gap-3 text-lg">
         <HiPencil onClick={onEdit} className="cursor-pointer hover:scale-125 text-gray-500 hover:text-gray-900 transition-all duration-200 ease-in-out"/>
         <HiTrash onClick={onDelete} className="text-red-400 cursor-pointer hover:scale-125 hover:text-red-600 transition-all duration-200 ease-in-out"/>
-      </div>
+      </div>)}
     </li>
   )
 }

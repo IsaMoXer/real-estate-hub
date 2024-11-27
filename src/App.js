@@ -16,6 +16,7 @@ import AppLayout from "./components/AppLayout";
 
 import { AuthProvider } from "./contexts/AuthContext";
 import Listing from "./pages/Listing";
+import Category from "./pages/Category";
 
 const protectedRoutes = [
   { path: "/profile", component: Profile },
@@ -46,6 +47,7 @@ function App() {
               <Route path="/sign-up" element={<SignUp />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/offers" element={<Offers />} />
+              <Route path="/category/:listingCategory" element={<Category />} />
               <Route path="/category/:listingCategory/:listingId" element={<Listing />} />
             </Route>
             <Route path="*" element={<PageNotFound />} />

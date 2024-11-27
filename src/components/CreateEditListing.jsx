@@ -73,16 +73,13 @@ function CreateEditListing() {
  
   // Check if listing exists and belongs to the user
   useEffect(() => {
-    if (!isListingLoading && formType.editListing) {
-      if (!listing || listing.length === 0) {
-        toast.error("Listing not found");
-        navigate("/");
-      } else if (listing.userRef !== user.uid) {
+    if (!isListingLoading && formType.editListing && listing.userRef) {
+    if (listing.userRef !== user.uid) {
         toast.error("You don't have permission to edit this listing");
         navigate("/");
       }
     }
-  }, [isListingLoading, listing, formType.editListing, user.uid, navigate])
+  }, [isListingLoading, listing.userRef, formType.editListing, user.uid, navigate])
 
   // If editing, fill the form with the listing to edit
   useEffect(() => {
