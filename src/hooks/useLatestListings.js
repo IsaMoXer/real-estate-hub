@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchQueryListings } from "../services/apiDb";
+import {LATEST_LISTINGS} from "../utils/constants";;
 
 export function useLatestListings(){
   const [latestListings, setLatestListings] = useState(null);
@@ -12,8 +13,9 @@ export function useLatestListings(){
     async function loadLastestListings(){
       try {
         setLoading(true);
-        const fetchedListings = await fetchQueryListings(queryConditions, 5);
-        setLatestListings(fetchedListings);
+        //const listings  = await fetchLatestListings(5);
+        const {listings} = await fetchQueryListings(queryConditions, LATEST_LISTINGS);
+        setLatestListings(listings);
         setError(null);
       } catch (err) {
         setError(err.message);

@@ -1,8 +1,8 @@
-import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, limit, orderBy, query, updateDoc, where } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, limit, orderBy, query, updateDoc, where, startAfter } from "firebase/firestore";
 
 import { db, storage } from "../firebase";
 import { deleteObject, ref } from "firebase/storage";
-import { parse } from "uuid";
+
 
 
 // CREATING DATA FUNCTIONS
@@ -81,56 +81,6 @@ export async function fetchUserById(userId) {
   }
 }
 
-/* export async function fetchLatestListings(defaultLimit=5) {
-  try {
-    const listingsRef = collection(db, "listings");
-    const q = query(
-      listingsRef, 
-      orderBy("timestamp", "desc"),
-      limit(defaultLimit),
-    );
-    
-    const querySnap = await getDocs(q);
-    
-    const listings = querySnap.docs.map(doc => ({
-      id: doc.id,
-      data: doc.data()
-    }));
-
-    return listings;
-
-  } catch (error) {
-    console.error("Error fetching listings:", error);
-    throw new Error("Failed to fetch listings: " + error.message);
-  }
-} */
-
-/* export async function fetchOfferListings(qInput, defaultLimit=4) {
-
-  try {
-    const listingsRef = collection(db, "listings");
-    const q = query(
-      listingsRef, 
-      orderBy("timestamp", "desc"),
-      where(qInput, "==", true),
-      limit(defaultLimit),
-    );
-    
-    const querySnap = await getDocs(q);
-    
-    const listings = querySnap.docs.map(doc => ({
-      id: doc.id,
-      data: doc.data()
-    }));
-
-    return listings;
-
-  } catch (error) {
-    console.error("Error fetching listings:", error);
-    throw new Error("Failed to fetch listings: " + error.message);
-  }
-} */
-
 // GETTING LISTINGS DEPENDING ON QUERY, REUSABLE, queryConditions IS AN ARRAY
 export async function fetchQueryListings(queryConditions, defaultLimit = 4) {
   try {
@@ -148,6 +98,30 @@ export async function fetchQueryListings(queryConditions, defaultLimit = 4) {
     const q = query(listingsRef, ...queryConstraints);
     
     const querySnap = await getDocs(q);
+
+    // For "load more listings" functionality
+    const lastVisible = querySnap.docs[querySnap.docs.length - 1];
+    
+    const listings = querySnap.docs.map(doc => ({
+      id: doc.id,
+      data: doc.data()
+    }));
+
+    return { listings, lastVisible };
+
+  } catch (error) {
+    console.error("Error fetching listings:", error);
+    throw new Error("Failed to fetch listings: " + error.message);
+  }
+}
+/* 
+export async function fetchLatestListings(defaultLimit = 4) {
+  try {
+    const listingsRef = collection(db, "listings");
+  
+    const q = query(listingsRef);
+    
+    const querySnap = await getDocs(q);
     
     const listings = querySnap.docs.map(doc => ({
       id: doc.id,
@@ -160,11 +134,12 @@ export async function fetchQueryListings(queryConditions, defaultLimit = 4) {
     console.error("Error fetching listings:", error);
     throw new Error("Failed to fetch listings: " + error.message);
   }
-}
+} */
 
 // DELETING DATA FUNCTIONS
   export async function deleteListingById(listingID) {
     try {
+
       // Fetch the listing to get the image URLs
       const listing = await fetchListingById(listingID);
       

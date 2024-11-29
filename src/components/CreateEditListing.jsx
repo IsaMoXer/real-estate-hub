@@ -511,7 +511,7 @@ function CreateEditListing() {
               type="file"
               id="images"
               required={formType.createListing}
-              accept=".jpg,.jpeg,.png"
+              accept=".jpg,.jpeg,.png,.webp"
               multiple
               error={errors.images}
             />

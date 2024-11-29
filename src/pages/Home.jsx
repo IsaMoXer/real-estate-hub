@@ -14,7 +14,10 @@ function Home() {
   const {rentListings, loading: rentsLoading} = useRentListings();
   const {saleListings, loading: salesLoading} = useSaleListings();
 
-  if(loading || offersLoading) return <Spinner />
+  const isLoading = loading || offersLoading || rentsLoading || salesLoading;
+
+  
+  if(isLoading) return <Spinner />
 
   return <div>
     {/* LATEST LISTINGS SLIDER*/}  
